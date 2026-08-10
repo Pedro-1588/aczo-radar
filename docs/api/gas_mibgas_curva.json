@@ -1,0 +1,96 @@
+{
+ "actualizado": "2026-08-10T15:58:17",
+ "unidad": "EUR/MWh",
+ "fecha_curva": "2026-08-07",
+ "forward_12m": 46.28,
+ "productos": [
+  {
+   "producto": "GMAES",
+   "etiqueta": "Mes M+1 (Sep26-Sep26)",
+   "entrega_ini": "2026-09-01",
+   "entrega_fin": "2026-09-30",
+   "precio": 55.79,
+   "peso_forward": 1
+  },
+  {
+   "producto": "GMES_M+2",
+   "etiqueta": "Mes M+2 (Oct26-Oct26)",
+   "entrega_ini": "2026-10-01",
+   "entrega_fin": "2026-10-31",
+   "precio": 54.33,
+   "peso_forward": 0
+  },
+  {
+   "producto": "GMES_M+3",
+   "etiqueta": "Mes M+3 (Nov26-Nov26)",
+   "entrega_ini": "2026-11-01",
+   "entrega_fin": "2026-11-30",
+   "precio": 54.0,
+   "peso_forward": 0
+  },
+  {
+   "producto": "GQES_Q+1",
+   "etiqueta": "Trimestre Q+1 (Oct26-Dec26)",
+   "entrega_ini": "2026-10-01",
+   "entrega_fin": "2026-12-31",
+   "precio": 54.1,
+   "peso_forward": 3
+  },
+  {
+   "producto": "GQES_Q+2",
+   "etiqueta": "Trimestre Q+2 (Jan27-Mar27)",
+   "entrega_ini": "2027-01-01",
+   "entrega_fin": "2027-03-31",
+   "precio": 51.32,
+   "peso_forward": 3
+  },
+  {
+   "producto": "GQES_Q+3",
+   "etiqueta": "Trimestre Q+3 (Apr27-Jun27)",
+   "entrega_ini": "2027-04-01",
+   "entrega_fin": "2027-06-30",
+   "precio": 37.5,
+   "peso_forward": 3
+  },
+  {
+   "producto": "GQES_Q+4",
+   "etiqueta": "Trimestre Q+4 (Jul27-Sep27)",
+   "entrega_ini": "2027-07-01",
+   "entrega_fin": "2027-09-30",
+   "precio": 35.38,
+   "peso_forward": 2
+  },
+  {
+   "producto": "GSES_S",
+   "etiqueta": "Verano (abr-sep) (Apr27-Sep27)",
+   "entrega_ini": "2027-04-01",
+   "entrega_fin": "2027-09-30",
+   "precio": 36.44,
+   "peso_forward": 0
+  },
+  {
+   "producto": "GSES_W",
+   "etiqueta": "Invierno (oct-mar) (Oct26-Mar27)",
+   "entrega_ini": "2026-10-01",
+   "entrega_fin": "2027-03-31",
+   "precio": 53.4,
+   "peso_forward": 0
+  },
+  {
+   "producto": "GYES_Y+1",
+   "etiqueta": "Año Y+1 (Jan27-Dec27)",
+   "entrega_ini": "2027-01-01",
+   "entrega_fin": "2027-12-31",
+   "precio": 39.75,
+   "peso_forward": 0
+  },
+  {
+   "producto": "GYES_Y+2",
+   "etiqueta": "Año Y+2 (Jan28-Dec28)",
+   "entrega_ini": "2028-01-01",
+   "entrega_fin": "2028-12-31",
+   "precio": 28.63,
+   "peso_forward": 0
+  }
+ ]
+}

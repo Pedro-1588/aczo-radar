@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ACZO · Radar de mercados</title>
+<style>
+  :root{
+    --bg:#f5f6f8; --card:#fff; --ink:#1a1a1a; --soft:#6b7280; --line:#e5e7eb;
+    --navy:#1f4e78; --green:#15803d; --red:#b91c1c; --amber:#b45309;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#0f1115; --card:#171a21; --ink:#e8eaed; --soft:#9aa3af; --line:#262b34;
+           --navy:#7aa7d4; --green:#4ade80; --red:#f87171; --amber:#fbbf24; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  header{background:var(--navy);color:#fff;padding:18px 20px}
+  @media (prefers-color-scheme: dark){ header{background:#12243a} }
+  header h1{margin:0;font-size:18px;letter-spacing:.2px}
+  header p{margin:4px 0 0;font-size:12px;opacity:.85}
+  main{max-width:1100px;margin:0 auto;padding:18px 14px 40px}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--soft);
+     margin:26px 0 10px;font-weight:600}
+  .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .k{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--soft)}
+  .v{font-size:28px;font-weight:650;margin-top:4px;font-variant-numeric:tabular-nums}
+  .u{font-size:12px;color:var(--soft);font-weight:400;margin-left:3px}
+  .n{font-size:12px;color:var(--soft);margin-top:6px}
+  .verde{color:var(--green)} .rojo{color:var(--red)} .ambar{color:var(--amber)}
+  .badge{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:600;
+         letter-spacing:.4px;border:1px solid currentColor}
+  table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+  th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--soft);font-weight:600}
+  .scroll{overflow-x:auto}
+  footer{color:var(--soft);font-size:12px;margin-top:30px;text-align:center}
+  .err{background:#fee;border:1px solid #fbb;color:#900;padding:12px;border-radius:8px}
+</style>
+</head>
+<body>
+<header>
+  <h1>ACZO · Radar de mercados</h1>
+  <p id="sello">cargando…</p>
+</header>
+<main>
+  <div id="error"></div>
+
+  <h2>Luz · OMIE + OMIP</h2>
+  <div class="grid" id="luz"></div>
+
+  <h2>Gas · MIBGAS</h2>
+  <div class="grid" id="gas"></div>
+
+  <h2>Curva de futuros</h2>
+  <div class="grid">
+    <div class="card"><div class="k">Luz (OMIP)</div><div class="scroll"><table id="cluz"></table></div></div>
+    <div class="card"><div class="k">Gas (MIBGAS Derivatives)</div><div class="scroll"><table id="cgas"></table></div></div>
+  </div>
+
+  <h2>Spot mensual · últimos 12 meses cerrados</h2>
+  <div class="grid">
+    <div class="card"><div class="k">Luz — media y periodos 2.0TD</div><div class="scroll"><table id="mluz"></table></div></div>
+    <div class="card"><div class="k">Gas — media mensual</div><div class="scroll"><table id="mgas"></table></div></div>
+  </div>
+
+  <footer>
+    Datos públicos de OMIE, OMIP y MIBGAS · se actualiza solo cada noche ·
+    para el motor: <code>api/resumen.json</code>
+  </footer>
+</main>
+
+<script>
+const eur = v => v==null ? "—" : v.toLocaleString("es-ES",{minimumFractionDigits:1,maximumFractionDigits:1});
+const card = (k,v,u,n,cls="") =>
+  `<div class="card"><div class="k">${k}</div><div class="v ${cls}">${v}<span class="u">${u||""}</span></div>${n?`<div class="n">${n}</div>`:""}</div>`;
+
+fetch("api/resumen.json?"+Date.now()).then(r=>r.json()).then(d=>{
+  const f = new Date(d.actualizado);
+  document.getElementById("sello").textContent =
+    "Actualizado " + f.toLocaleString("es-ES",{dateStyle:"long",timeStyle:"short"}) + " · precios en €/MWh";
+
+  const L=d.luz;
+  const lect = L.lectura==="ABIERTA" ? ["verde","VENTANA ABIERTA · fijar sale a cuenta"]
+             : L.lectura==="CATALOGO_CARO" ? ["rojo","CATÁLOGO CARO · negociar o esperar"]
+             : ["ambar","NEUTRAL · catálogo alineado con el mercado"];
+  document.getElementById("luz").innerHTML =
+      card("Spot mes en curso", eur(L.spot_mes_en_curso.media), "€/MWh",
+           L.spot_mes_en_curso.mes+" · "+L.spot_mes_en_curso.dias_con_dato+" días")
+    + card("Último mes cerrado", eur(L.spot_ultimo_mes_cerrado?.media), "€/MWh", L.spot_ultimo_mes_cerrado?.mes)
+    + card("Media 12 meses", eur(L.spot_media_12m), "€/MWh", "retrovisor")
+    + card("Forward 12 meses", eur(L.forward_12m), "€/MWh", "curva OMIP de "+(L.fecha_curva_omip||"—"))
+    + card("Fijo teórico hoy", eur(L.fijo_teorico), "€/MWh", "forward + peajes + cobertura")
+    + card("Ventana de fijación", (L.ventana_fijacion>0?"+":"")+eur(L.ventana_fijacion), "€/MWh",
+           `<span class="badge ${lect[0]}">${lect[1]}</span>`, lect[0]);
+
+  const G=d.gas;
+  const est = G.estructura==="BACKWARDATION" ? ["verde","BACKWARDATION · el mercado espera gas más barato"]
+            : G.estructura==="CONTANGO" ? ["rojo","CONTANGO · el mercado espera gas más caro"]
+            : ["ambar","CURVA PLANA"];
+  document.getElementById("gas").innerHTML =
+      card("Spot mes en curso", eur(G.spot_mes_en_curso.media), "€/MWh",
+           G.spot_mes_en_curso.mes+" · "+G.spot_mes_en_curso.dias_con_dato+" días")
+    + card("Último mes cerrado", eur(G.spot_ultimo_mes_cerrado?.media), "€/MWh", G.spot_ultimo_mes_cerrado?.mes)
+    + card("Media 12 meses", eur(G.spot_media_12m), "€/MWh", "retrovisor")
+    + card("Forward 12 meses", eur(G.forward_12m), "€/MWh", "curva de "+(G.fecha_curva||"—"))
+    + card("Forward − spot", (G.forward_menos_spot>0?"+":"")+eur(G.forward_menos_spot), "€/MWh",
+           `<span class="badge ${est[0]}">${est[1]}</span>`, est[0]);
+}).catch(e=>{
+  document.getElementById("error").innerHTML =
+    '<div class="err">No se pudo leer <code>api/resumen.json</code>. Si acabas de crear el repositorio, espera a la primera ejecución del robot.</div>';
+});
+
+fetch("api/luz_omip_curva.json?"+Date.now()).then(r=>r.json()).then(d=>{
+  document.getElementById("cluz").innerHTML =
+    "<tr><th>Instrumento</th><th>€/MWh</th><th>Peso</th></tr>" +
+    d.instrumentos.map(i=>`<tr><td>${i.instrumento}</td><td>${eur(i.precio)}</td><td>${i.peso_forward||"—"}</td></tr>`).join("");
+}).catch(()=>{});
+
+fetch("api/gas_mibgas_curva.json?"+Date.now()).then(r=>r.json()).then(d=>{
+  document.getElementById("cgas").innerHTML =
+    "<tr><th>Producto</th><th>€/MWh</th><th>Peso</th></tr>" +
+    d.productos.map(i=>`<tr><td>${i.etiqueta}</td><td>${eur(i.precio)}</td><td>${i.peso_forward||"—"}</td></tr>`).join("");
+}).catch(()=>{});
+
+fetch("api/luz_omie_mensual.json?"+Date.now()).then(r=>r.json()).then(d=>{
+  const m=d.periodos_2_0TD.slice(-12).reverse();
+  document.getElementById("mluz").innerHTML =
+    "<tr><th>Mes</th><th>P1</th><th>P2</th><th>P3</th><th>Media</th></tr>" +
+    m.map(x=>`<tr><td>${x.mes}</td><td>${eur(x.p1)}</td><td>${eur(x.p2)}</td><td>${eur(x.p3)}</td><td><b>${eur(x.media)}</b></td></tr>`).join("");
+}).catch(()=>{});
+
+fetch("api/gas_mibgas_mensual.json?"+Date.now()).then(r=>r.json()).then(d=>{
+  const m=d.meses.slice(-12).reverse();
+  document.getElementById("mgas").innerHTML =
+    "<tr><th>Mes</th><th>Media €/MWh</th></tr>" +
+    m.map(x=>`<tr><td>${x.mes}</td><td><b>${eur(x.media)}</b></td></tr>`).join("");
+}).catch(()=>{});
+</script>
+</body>
+</html>

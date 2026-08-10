@@ -1,0 +1,7 @@
+clave,valor,que_es
+umbral_20,110,Umbral verde/rojo hoja OMIE_20 (€/MWh)
+umbral_6p,110,Umbral verde/rojo hoja OMIE_6P (€/MWh)
+mejor_fijo,109.9,Mejor fijo del catálogo — energía (€/MWh) para la ventana OMIP
+peajes,28,Peajes y ajustes de la fórmula del fijo teórico (€/MWh)
+cobertura,10,Cobertura de seguridad (€/MWh)
+umbral_gas,55,Umbral verde/rojo del Radar de Gas (€/MWh MIBGAS)
