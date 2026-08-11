@@ -6,3 +6,19 @@
 2026-08-10 15:58  MIBGAS: curva de 11 productos (2026-08-07) · pesos suman 12
 2026-08-10 15:58  Excel gas regenerado OK
 2026-08-10 15:58  JSON de la API regenerado OK
+2026-08-11 10:57  OMIE: 4 días descargados desde 2026-08-01
+2026-08-11 10:57  OMIE: diario del mes → 4 días
+2026-08-11 10:57  OMIP: 16 instrumentos · suma de pesos 12 (debe ser 12)
+2026-08-11 10:57  Excel regenerado OK
+2026-08-11 10:57  MIBGAS: spot con 1319 días de entrega (último 2026-08-11)
+2026-08-11 10:57  ERROR MIBGAS curva: File is not a zip file — el Excel mantiene la última curva guardada
+2026-08-11 10:58  Excel gas regenerado OK
+2026-08-11 10:58  JSON de la API regenerado OK
+2026-08-11 11:28  OMIE: 11 días nuevos · 11 en caché desde 2026-08-01 · sin publicar aún: 2026-08-12
+2026-08-11 11:28  OMIE: diario del mes → 11 días
+2026-08-11 11:28  OMIP: 16 instrumentos · suma de pesos 12 (debe ser 12)
+2026-08-11 11:28  Excel regenerado OK
+2026-08-11 11:28  MIBGAS: spot con 1319 días de entrega (último 2026-08-11)
+2026-08-11 11:28  MIBGAS: curva de 11 productos (2026-08-10) · pesos suman 12
+2026-08-11 11:28  Excel gas regenerado OK
+2026-08-11 11:28  JSON de la API regenerado OK

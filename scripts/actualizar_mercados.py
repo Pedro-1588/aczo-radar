@@ -9,7 +9,7 @@ ACZO · Actualizador diario del Radar de Mercados.
 5) Reconstruye ACZO_Radar_Mercados.xlsx.
 Pensado para ejecutarse a diario a las 21:15 vía launchd. Sin argumentos.
 """
-import csv, datetime, os, re, ssl, sys, html, subprocess
+import csv, datetime, os, re, ssl, sys, html, subprocess, time
 import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -33,12 +33,23 @@ def log(msg):
     print(msg)
 
 # ---------------- OMIE ----------------
-def descargar_dia(d):
-    """Devuelve lista de 24 precios horarios (€/MWh) o None si no publicado."""
+def descargar_dia(d, intentos=3):
+    """Devuelve ({hora: precio}, [cuartos]) o None si no está publicado.
+    OMIE limita peticiones seguidas: se reintenta con espera creciente."""
+    for intento in range(intentos):
+        r = _bajar_dia(d)
+        if r is not None:
+            return r
+        if intento < intentos - 1:
+            time.sleep(3 * (intento + 1))
+    return None
+
+def _bajar_dia(d):
     for ver in (1,2,3):
         url = f"https://www.omie.es/es/file-download?parents=marginalpdbc&filename=marginalpdbc_{d:%Y%m%d}.{ver}"
         try:
-            with urllib.request.urlopen(url, context=CTX, timeout=30) as r:
+            req = urllib.request.Request(url, headers={"User-Agent":"Mozilla/5.0"})
+            with urllib.request.urlopen(req, context=CTX, timeout=30) as r:
                 t = r.read().decode("utf-8", errors="replace")
         except Exception:
             continue
@@ -77,33 +88,77 @@ def leer_csv(path):
     with open(path) as f:
         rd=csv.reader(f); head=next(rd); return head,[r for r in rd]
 
+CACHE = os.path.join(SP, "omie_dias_cache.csv")
+
+def cargar_cache():
+    """Días ya descargados: {fecha: {"horas":{1..24:precio}, "min":x, "max":y}}.
+    Es la red de seguridad: si OMIE falla un día, no se pierde nada de lo anterior."""
+    out = {}
+    if not os.path.exists(CACHE): return out
+    with open(CACHE) as f:
+        for row in csv.DictReader(f):
+            try:
+                d = datetime.date.fromisoformat(row["fecha"])
+                horas = {int(k[1:]): float(v) for k, v in row.items()
+                         if k.startswith("h") and k[1:].isdigit() and v not in ("", None)}
+                if not horas: continue
+                out[d] = {"horas": horas, "min": float(row["min_q"]), "max": float(row["max_q"])}
+            except (ValueError, KeyError, TypeError):
+                continue
+    return out
+
+def guardar_cache(cache):
+    tmp = CACHE + ".tmp"
+    with open(tmp, "w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["fecha"] + [f"h{i}" for i in range(1,25)] + ["min_q","max_q"])
+        for d in sorted(cache):
+            c = cache[d]
+            w.writerow([d.isoformat()] +
+                       [f"{c['horas'][i]:.2f}" if i in c["horas"] else "" for i in range(1,25)] +
+                       [f"{c['min']:.2f}", f"{c['max']:.2f}"])
+    os.replace(tmp, CACHE)
+
 def actualizar_omie():
     hoy = datetime.date.today()
     head20,filas20 = leer_csv(os.path.join(SP,"omie_mensual_periodos.csv"))
     head6, filas6  = leer_csv(os.path.join(SP,"omie_6p.csv"))
     y,m = int(filas20[-1][0]), int(filas20[-1][1])
-    # primer mes sin cerrar en los CSV
-    y0,m0 = (y,m+1) if m<12 else (y+1,1)
+    y0,m0 = (y,m+1) if m<12 else (y+1,1)      # primer mes sin cerrar
     ini = datetime.date(y0,m0,1)
-    dias, cuartos_dia = {}, {}
-    d = ini
+
+    cache = cargar_cache()
+    # solo se piden los días que faltan: el resto ya está en caché
+    pendientes, d = [], ini
     while d <= hoy + datetime.timedelta(days=1):
-        r = descargar_dia(d)
-        if r is not None:
-            dias[d], cuartos_dia[d] = r
+        if d not in cache: pendientes.append(d)
         d += datetime.timedelta(days=1)
-    log(f"OMIE: {len(dias)} días descargados desde {ini}")
-    # cerrar meses completos
+
+    nuevos, fallidos = 0, []
+    for d in pendientes:
+        r = descargar_dia(d)
+        if r is None:
+            fallidos.append(d)
+        else:
+            horas, cuartos = r
+            cache[d] = {"horas": horas, "min": min(cuartos), "max": max(cuartos)}
+            nuevos += 1
+        time.sleep(0.5)                        # respeta el límite de peticiones de OMIE
+    if nuevos: guardar_cache(cache)
+    log(f"OMIE: {nuevos} días nuevos · {len(cache)} en caché desde {ini}"
+        + (f" · sin publicar aún: {', '.join(str(f) for f in fallidos)}" if fallidos else ""))
+
+    # cerrar meses completos (todo se calcula desde la caché, nunca desde una descarga parcial)
     mm = (y0,m0)
     while True:
         y_,m_ = mm
         nxt = datetime.date(y_,m_,28)+datetime.timedelta(days=4)
         fin = datetime.date(nxt.year,nxt.month,1)-datetime.timedelta(days=1)
-        dias_mes = [d for d in dias if d.year==y_ and d.month==m_]
-        if len(dias_mes) < fin.day: break  # mes incompleto → paramos
+        dias_mes = [d for d in cache if d.year==y_ and d.month==m_]
+        if len(dias_mes) < fin.day: break      # mes incompleto → se cierra otro día
         agg20, agg6 = {}, {}
         for d in dias_mes:
-            for h,v in dias[d].items():
+            for h,v in cache[d]["horas"].items():
                 agg20.setdefault(periodo20(d,h),[]).append(v)
                 agg6.setdefault(periodo6(d,h),[]).append(v)
         filas20.append([y_,m_]+[f"{sum(agg20[p])/len(agg20[p])/1000:.5f}" for p in ("P1","P2","P3")])
@@ -117,14 +172,15 @@ def actualizar_omie():
                             (os.path.join(SP,"omie_6p.csv"),head6,filas6)):
         with open(path,"w",newline="") as f:
             w=csv.writer(f); w.writerow(head); w.writerows(filas)
-    # diario del mes en curso (mín/máx a nivel cuartohorario, media del día)
-    mes_curso = [d for d in sorted(dias) if (d.year,d.month)==(hoy.year,hoy.month)] or \
-                [d for d in sorted(dias)][-31:]
+
+    # diario del mes en curso, reconstruido íntegro desde la caché
+    mes_curso = sorted(d for d in cache if (d.year,d.month)==(hoy.year,hoy.month))
+    if not mes_curso: mes_curso = sorted(cache)[-31:]
     with open(os.path.join(SP,"omie_diario_minmax.csv"),"w",newline="") as f:
         w=csv.writer(f); w.writerow(["fecha","min","media","max"])
         for d in mes_curso:
-            q = cuartos_dia[d]
-            w.writerow([d.isoformat(), f"{min(q):.2f}", f"{sum(q)/len(q):.2f}", f"{max(q):.2f}"])
+            c = cache[d]; hs = list(c["horas"].values())
+            w.writerow([d.isoformat(), f"{c['min']:.2f}", f"{sum(hs)/len(hs):.2f}", f"{c['max']:.2f}"])
     log(f"OMIE: diario del mes → {len(mes_curso)} días")
 
 # ---------------- OMIP ----------------
