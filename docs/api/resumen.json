@@ -1,12 +1,12 @@
 {
- "actualizado": "2026-08-17T19:48:25",
+ "actualizado": "2026-08-18T19:46:38",
  "unidad": "EUR/MWh",
  "luz": {
   "fuente": "OMIE (spot) + OMIP (futuros)",
   "spot_mes_en_curso": {
    "mes": "2026-08",
-   "media": 125.22,
-   "dias_con_dato": 18
+   "media": 125.35,
+   "dias_con_dato": 19
   },
   "spot_ultimo_mes_cerrado": {
    "mes": "2026-07",
@@ -16,11 +16,11 @@
    "media": 102.09
   },
   "spot_media_12m": 61.97,
-  "forward_12m": 84.43,
-  "fecha_curva_omip": "2026-08-17",
-  "fijo_teorico": 122.43,
+  "forward_12m": 84.17,
+  "fecha_curva_omip": "2026-08-18",
+  "fijo_teorico": 122.17,
   "mejor_fijo_catalogo": 109.9,
-  "ventana_fijacion": 12.53,
+  "ventana_fijacion": 12.27,
   "lectura": "ABIERTA",
   "parametros": {
    "peajes_ajustes": 28.0,
@@ -31,17 +31,17 @@
   "fuente": "MIBGAS (spot PVB) + MIBGAS Derivatives (futuros)",
   "spot_mes_en_curso": {
    "mes": "2026-08",
-   "media": 58.74,
-   "dias_con_dato": 18
+   "media": 59.0,
+   "dias_con_dato": 19
   },
   "spot_ultimo_mes_cerrado": {
    "mes": "2026-07",
    "media": 55.03
   },
   "spot_media_12m": 38.6,
-  "forward_12m": 51.05,
-  "fecha_curva": "2026-08-17",
-  "forward_menos_spot": -7.69,
+  "forward_12m": 52.4,
+  "fecha_curva": "2026-08-18",
+  "forward_menos_spot": -6.6,
   "estructura": "BACKWARDATION"
  }
 }
