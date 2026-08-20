@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-08-20T11:53:44",
+ "actualizado": "2026-08-20T19:52:47",
  "unidad": "EUR/MWh",
  "luz": {
   "fuente": "OMIE (spot) + OMIP (futuros)",
@@ -31,17 +31,17 @@
   "fuente": "MIBGAS (spot PVB) + MIBGAS Derivatives (futuros)",
   "spot_mes_en_curso": {
    "mes": "2026-08",
-   "media": 59.22,
-   "dias_con_dato": 20
+   "media": 59.53,
+   "dias_con_dato": 21
   },
   "spot_ultimo_mes_cerrado": {
    "mes": "2026-07",
    "media": 55.03
   },
   "spot_media_12m": 38.6,
-  "forward_12m": 52.77,
-  "fecha_curva": "2026-08-19",
-  "forward_menos_spot": -6.45,
+  "forward_12m": 54.47,
+  "fecha_curva": "2026-08-20",
+  "forward_menos_spot": -5.06,
   "estructura": "BACKWARDATION"
  }
 }
