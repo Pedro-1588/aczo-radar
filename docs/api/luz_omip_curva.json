@@ -1,31 +1,31 @@
 {
- "actualizado": "2026-08-20T19:52:47",
+ "actualizado": "2026-08-21T19:44:53",
  "unidad": "EUR/MWh",
- "fecha_curva": "2026-08-20",
- "forward_12m": 85.21,
+ "fecha_curva": "2026-08-21",
+ "forward_12m": 87.7,
  "instrumentos": [
   {
    "clave": "M1",
    "instrumento": "FTB M Sep-26",
-   "precio": 113.63,
+   "precio": 117.55,
    "peso_forward": 1
   },
   {
    "clave": "M2",
    "instrumento": "FTB M Oct-26",
-   "precio": 110.0,
+   "precio": 114.0,
    "peso_forward": 0
   },
   {
    "clave": "M3",
    "instrumento": "FTB M Nov-26",
-   "precio": 114.98,
+   "precio": 115.96,
    "peso_forward": 0
   },
   {
    "clave": "M4",
    "instrumento": "FTB M Dec-26",
-   "precio": 112.75,
+   "precio": 115.96,
    "peso_forward": 0
   },
   {
@@ -43,61 +43,61 @@
   {
    "clave": "Q1",
    "instrumento": "FTB Q4-26",
-   "precio": 112.55,
+   "precio": 115.3,
    "peso_forward": 3
   },
   {
    "clave": "Q2",
    "instrumento": "FTB Q1-27",
-   "precio": 91.25,
+   "precio": 95.0,
    "peso_forward": 3
   },
   {
    "clave": "Q3",
    "instrumento": "FTB Q2-27",
-   "precio": 50.0,
+   "precio": 51.5,
    "peso_forward": 3
   },
   {
    "clave": "Q4",
    "instrumento": "FTB Q3-27",
-   "precio": 73.75,
+   "precio": 74.73,
    "peso_forward": 2
   },
   {
    "clave": "Q5",
    "instrumento": "FTB Q4-27",
-   "precio": 76.36,
+   "precio": 75.38,
    "peso_forward": 0
   },
   {
    "clave": "Q6",
    "instrumento": "FTB Q1-28",
-   "precio": 65.11,
+   "precio": 65.71,
    "peso_forward": 0
   },
   {
    "clave": "Q7",
    "instrumento": "FTB Q2-28",
-   "precio": 42.05,
+   "precio": 42.65,
    "peso_forward": 0
   },
   {
    "clave": "Y1",
    "instrumento": "FTB YR-27",
-   "precio": 72.8,
+   "precio": 74.1,
    "peso_forward": 0
   },
   {
    "clave": "Y2",
    "instrumento": "FTB YR-28",
-   "precio": 58.0,
+   "precio": 58.6,
    "peso_forward": 0
   },
   {
    "clave": "Y3",
    "instrumento": "FTB YR-29",
-   "precio": 53.5,
+   "precio": 53.8,
    "peso_forward": 0
   }
  ]
